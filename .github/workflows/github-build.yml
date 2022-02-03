@@ -1,0 +1,26 @@
+name: Application CI/CD Production
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  pipeline:
+    name: Build ZIP
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.pull_request.title, '[skip ci]') && !contains(github.event.pull_request.title, '[ci skip]')"
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v2
+      - name: Package Function
+        run: |
+          zip authservice.zip authservice.js
+      - name: Upload to S3
+        run: |
+          aws s3 cp authservice.zip s3://apnmt-aws-applications/authservice.zip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'eu-central-1'
