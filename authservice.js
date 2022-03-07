@@ -33,14 +33,22 @@ exports.handler = async (event, context) => {
     let createUserResponse = await cognito.adminCreateUser(createUserParams).promise();
     console.log(JSON.stringify(createUserResponse, null, 2));
 
-    var setUserPasswordParams = {
-      Password: PASSWORD,
-      UserPoolId: USERPOOLID,
-      Username: USERNAME,
-      Permanent: true
+    let setUserPasswordParams = {
+        Password: PASSWORD,
+        UserPoolId: USERPOOLID,
+        Username: USERNAME,
+        Permanent: true
     };
     let setUserPasswordResponseBody = await cognito.adminSetUserPassword(setUserPasswordParams).promise();
     console.log(JSON.stringify(setUserPasswordResponseBody, null, 2));
+
+    let userGroupParams = {
+        UserPoolId: USERPOOLID,
+        Username: USERNAME,
+        GroupName: "user"
+    }
+    let addUserToGroupResponseBody = await cognito.adminAddUserToGroup(userGroupParams).promise()
+    console.log(JSON.stringify(addUserToGroupResponseBody, null, 2));
 
     const response = {
         "statusCode": 200,
